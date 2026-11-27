@@ -1012,4 +1012,1465 @@ jobs:
                             IconButton(
                               icon: const Icon(Icons.edit_rounded, color: kGold, size: 20),
                               onPressed: () => _editNameDialog(st),
-      
+                            ),
+                          ],
+                        ),
+                        Text('متقن ${st.masteredSurahs.length} من ١١٤ سورة • ${st.reports.length} تقرير تسميع',
+                            style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(st.firebaseUrl.isNotEmpty ? Icons.cloud_done_rounded : Icons.cloud_off_rounded, color: kGold, size: 18),
+                            const SizedBox(width: 6),
+                            Text(
+                              st.firebaseUrl.isNotEmpty ? 'Firebase متصل للغرف الحية' : 'Firebase غير مربوط بعد (اضبطه بالأسفل)',
+                              style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Voice Recordings & Reports Archive
+                  Card(
+                    color: card,
+                    child: ListTile(
+                      leading: const CircleAvatar(backgroundColor: kEmeraldSoft, child: Icon(Icons.graphic_eq_rounded, color: kEmerald)),
+                      title: Text('تسجيلاتي الصوتية (${st.recordings.length})', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                      subtitle: const Text('سجّل تلاوتك واستمع إليها أو أرسلها لمعلمك عبر واتساب'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => VoiceStudioScreen(state: st))),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    color: card,
+                    child: ListTile(
+                      leading: const CircleAvatar(backgroundColor: kEmeraldSoft, child: Icon(Icons.cloud_sync_rounded, color: kEmerald)),
+                      title: const Text('ربط حساب Firebase للتحدي الحي', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                      subtitle: Text(st.firebaseUrl.isEmpty ? 'أضف رابط قاعدة بيانات Firebase Realtime Database' : st.firebaseUrl, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _showFirebaseSetupDialog(st),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // ITQAN Controls (Original Layout)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(color: card, borderRadius: BorderRadius.circular(18), border: Border.all(color: kBorder)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('تخصيص المصحف ومعلم التجويد', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15)),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: Text('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
+                              style: TextStyle(fontFamily: 'AmiriQuran', fontSize: st.fontSize, height: 1.8)),
+                        ),
+                        Slider(
+                          min: 22,
+                          max: 40,
+                          activeColor: kEmerald,
+                          value: st.fontSize,
+                          onChanged: (v) {
+                            st.fontSize = v;
+                            st.save();
+                          },
+                        ),
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          value: st.tajweedColors,
+                          activeColor: kEmerald,
+                          title: const Text('تلوين أحكام التجويد في المصحف', style: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.bold)),
+                          subtitle: const Text('غنة • قلقلة • مدود • إدغام وإخفاء وإقلاب'),
+                          onChanged: (v) {
+                            st.tajweedColors = v;
+                            st.save();
+                          },
+                        ),
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          value: st.liveTajweedCoach,
+                          activeColor: kEmerald,
+                          title: const Text('ملاحظات التجويد أثناء التسميع', style: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.bold)),
+                          onChanged: (v) {
+                            st.liveTajweedCoach = v;
+                            st.save();
+                          },
+                        ),
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          value: st.themeMode == ThemeMode.dark,
+                          activeColor: kEmerald,
+                          title: const Text('الوضع الليلي الهادئ', style: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.bold)),
+                          onChanged: (v) {
+                            st.themeMode = v ? ThemeMode.dark : ThemeMode.light;
+                            st.save();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Developer Contact Card (Yemen +967 776768126)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(color: card, borderRadius: BorderRadius.circular(18), border: Border.all(color: kGold.withValues(alpha: 0.45))),
+                    child: Row(
+                      children: [
+                        const CircleAvatar(backgroundColor: kEmerald, child: Icon(Icons.support_agent_rounded, color: kGoldLight)),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('اقتراح أو تواصل مع المطور', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 14)),
+                              Text('م. عبدالرحمن المهدلي', style: TextStyle(fontSize: 12, color: kMuted)),
+                              Directionality(
+                                textDirection: TextDirection.ltr,
+                                child: Text('+967 776768126', style: TextStyle(color: kGold, fontWeight: FontWeight.bold, fontSize: 13)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: kEmerald, foregroundColor: kGoldLight),
+                          onPressed: () async {
+                            final u = Uri.parse('https://wa.me/967776768126?text=${Uri.encodeComponent("السلام عليكم، تواصل بخصوص تطبيق إتقان للقرآن:")}');
+                            await launchUrl(u, mode: LaunchMode.externalApplication);
+                          },
+                          child: const Text('واتساب', style: TextStyle(fontFamily: 'Cairo', fontSize: 12)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            void _editNameDialog(ItqanState st) {
+              final c = TextEditingController(text: st.studentName);
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('اسمك في التقارير والتحدي', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                  content: TextField(controller: c, decoration: const InputDecoration(hintText: 'اكتب اسمك هنا...', border: OutlineInputBorder())),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
+                    ElevatedButton(
+                      onPressed: () {
+                        st.studentName = c.text.trim();
+                        st.save();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('حفظ'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            void _showFirebaseSetupDialog(ItqanState st) {
+              final c = TextEditingController(text: st.firebaseUrl);
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('ربط Firebase Realtime Database', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 16)),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('الصق رابط قاعدة بيانات Firebase Realtime Database لتفعيل غرف التحدي الحية بين ٥ أجهزة:', style: TextStyle(fontSize: 12)),
+                      const SizedBox(height: 10),
+                      TextField(
+                        controller: c,
+                        textDirection: TextDirection.ltr,
+                        decoration: const InputDecoration(
+                          hintText: 'https://your-project-default-rtdb.firebaseio.com',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final url = FirebaseRoomService.cleanUrl(c.text);
+                        final ok = await FirebaseRoomService.testConnection(url);
+                        st.firebaseUrl = url;
+                        await st.save();
+                        if (mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(ok ? 'تم الاتصال بـ Firebase بنجاح!' : 'تم حفظ الرابط — تأكد من تفعيل Realtime Database')),
+                          );
+                        }
+                      },
+                      child: const Text('حفظ واختبار'),
+                    ),
+                  ],
+                ),
+              );
+            }
+          }
+
+          // ============================================================================
+          // TAB 2: MUSHAF WITH LIVE TAJWEED COLORING & TAP-TO-EXPLAIN RULES
+          // ============================================================================
+          class MushafTajweedTab extends StatefulWidget {
+            final List<SurahModel> surahs;
+            final ItqanState state;
+            final FlutterTts tts;
+            const MushafTajweedTab({super.key, required this.surahs, required this.state, required this.tts});
+            @override
+            State<MushafTajweedTab> createState() => _MushafTajweedTabState();
+          }
+
+          class _MushafTajweedTabState extends State<MushafTajweedTab> {
+            int _selectedIdx = 0;
+
+            void _showRuleSheet(TajweedNote note) {
+              showModalBottomSheet(
+                context: context,
+                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
+                builder: (_) => SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(radius: 8, backgroundColor: note.color),
+                            const SizedBox(width: 8),
+                            Text(note.rule, style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 17, color: note.color)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Center(child: Text(note.word, style: const TextStyle(fontFamily: 'AmiriQuran', fontSize: 34))),
+                        const SizedBox(height: 10),
+                        Text(note.tip, style: const TextStyle(fontSize: 14, height: 1.6)),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              final s = widget.surahs[_selectedIdx];
+              final st = widget.state;
+
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 6),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
+                            value: _selectedIdx,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                            items: List.generate(
+                              widget.surahs.length,
+                              (i) => DropdownMenuItem(value: i, child: Text('${widget.surahs[i].num}. ${widget.surahs[i].name}')),
+                            ),
+                            onChanged: (v) {
+                              if (v != null) setState(() => _selectedIdx = v);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        FilterChip(
+                          selected: st.tajweedColors,
+                          label: const Text('ألوان التجويد', style: TextStyle(fontFamily: 'Cairo', fontSize: 12)),
+                          onSelected: (v) {
+                            st.tajweedColors = v;
+                            st.save();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (st.tajweedColors)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                      child: Wrap(
+                        spacing: 12,
+                        children: [
+                          Text('● غنة', style: TextStyle(color: kTajGhunnah, fontWeight: FontWeight.bold, fontSize: 11)),
+                          Text('● قلقلة', style: TextStyle(color: kTajQalqalah, fontWeight: FontWeight.bold, fontSize: 11)),
+                          Text('● مدّ', style: TextStyle(color: kTajMadd, fontWeight: FontWeight.bold, fontSize: 11)),
+                          Text('● إدغام/إخفاء/إقلاب', style: TextStyle(color: kTajIdgham, fontWeight: FontWeight.bold, fontSize: 11)),
+                        ],
+                      ),
+                    ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 6, 16, 20),
+                      itemCount: s.ayahs.length,
+                      itemBuilder: (_, idx) {
+                        final a = s.ayahs[idx];
+                        final words = a.text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF10211B) : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: kBorder),
+                          ),
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 6,
+                            runSpacing: 8,
+                            children: [
+                              for (int w = 0; w < words.length; w++)
+                                Builder(builder: (_) {
+                                  final note = st.tajweedColors ? TajweedAnalyzer.analyzeWord(words[w], w + 1 < words.length ? words[w + 1] : null) : null;
+                                  return InkWell(
+                                    onTap: note != null ? () => _showRuleSheet(note) : null,
+                                    child: Text(
+                                      words[w],
+                                      style: TextStyle(
+                                        fontFamily: 'AmiriQuran',
+                                        fontSize: st.fontSize,
+                                        height: 1.8,
+                                        color: note?.color,
+                                        decoration: note != null ? TextDecoration.underline : null,
+                                        decorationStyle: TextDecorationStyle.dotted,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              Text('﴿${QuranMatcher.toArabicDigits(a.num)}﴾', style: const TextStyle(fontFamily: 'AmiriQuran', fontSize: 22, color: kGold)),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }
+          }
+
+          // ============================================================================
+          // TAB 3: LIVE 5-PERSON FIREBASE CHALLENGE ROOM
+          // ============================================================================
+          class FirebaseChallengeTab extends StatefulWidget {
+            final List<SurahModel> surahs;
+            final ItqanState state;
+            final FlutterTts tts;
+            const FirebaseChallengeTab({super.key, required this.surahs, required this.state, required this.tts});
+            @override
+            State<FirebaseChallengeTab> createState() => _FirebaseChallengeTabState();
+          }
+
+          class _FirebaseChallengeTabState extends State<FirebaseChallengeTab> {
+            final _joinCtrl = TextEditingController();
+            int _pickedSurahIdx = 66; // الملك
+            Map<String, dynamic>? _room;
+            bool _busy = false;
+            Timer? _poller;
+
+            @override
+            void initState() {
+              super.initState();
+              if (widget.state.activeRoomCode.isNotEmpty && widget.state.firebaseUrl.isNotEmpty) {
+                _refreshRoom(widget.state.activeRoomCode);
+              }
+              _poller = Timer.periodic(const Duration(seconds: 6), (_) {
+                if (_room != null && widget.state.firebaseUrl.isNotEmpty && mounted) {
+                  _refreshRoom(_room!['code']);
+                }
+              });
+            }
+
+            @override
+            void dispose() {
+              _poller?.cancel();
+              _joinCtrl.dispose();
+              super.dispose();
+            }
+
+            Future<void> _refreshRoom(String code) async {
+              final data = await FirebaseRoomService.fetchRoom(widget.state.firebaseUrl, code);
+              if (mounted && data != null) setState(() => _room = data);
+            }
+
+            Future<void> _createLiveRoom() async {
+              if (widget.state.firebaseUrl.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('أضف رابط Firebase أولًا من تبويب «ملفي» لتفعيل الغرف الحية')));
+                return;
+              }
+              setState(() => _busy = true);
+              final code = 'ITQAN-${1000 + Random().nextInt(8999)}';
+              final s = widget.surahs[_pickedSurahIdx];
+              final name = widget.state.studentName.isEmpty ? 'منشئ الغرفة' : widget.state.studentName;
+              final created = await FirebaseRoomService.createRoom(
+                dbUrl: widget.state.firebaseUrl,
+                roomCode: code,
+                surahNum: s.num,
+                surahName: s.name,
+                hostName: name,
+              );
+              if (created != null) {
+                widget.state.activeRoomCode = code;
+                await widget.state.save();
+                setState(() => _room = created);
+              } else if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تعذّر إنشاء الغرفة — تأكد من رابط Firebase وصلاحيات القراءة/الكتابة')));
+              }
+              if (mounted) setState(() => _busy = false);
+            }
+
+            Future<void> _joinRoom() async {
+              final code = _joinCtrl.text.trim().toUpperCase();
+              if (code.isEmpty || widget.state.firebaseUrl.isEmpty) return;
+              setState(() => _busy = true);
+              final data = await FirebaseRoomService.fetchRoom(widget.state.firebaseUrl, code);
+              if (data != null) {
+                final name = widget.state.studentName.isEmpty ? 'متسابق' : widget.state.studentName;
+                await FirebaseRoomService.joinOrUpdateMember(
+                  dbUrl: widget.state.firebaseUrl,
+                  roomCode: code,
+                  memberId: widget.state.memberId,
+                  name: name,
+                  done: false,
+                  score: 0,
+                  tajweed: 0,
+                );
+                widget.state.activeRoomCode = code;
+                await widget.state.save();
+                await _refreshRoom(code);
+              } else if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('لم يتم العثور على غرفة بهذا الرمز')));
+              }
+              if (mounted) setState(() => _busy = false);
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              final st = widget.state;
+              final membersMap = (_room?['members'] as Map<String, dynamic>?) ?? {};
+              final members = membersMap.values.map((e) => Map<String, dynamic>.from(e as Map)).toList()
+                ..sort((a, b) => ((b['score'] ?? 0) as int).compareTo((a['score'] ?? 0) as int));
+
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (st.firebaseUrl.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(color: kGold.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(16), border: Border.all(color: kGold)),
+                      child: const Text(
+                        'لتشغيل التحدي الحي بين ٥ جوالات عبر الإنترنت: أضف رابط Firebase Realtime Database من تبويب «ملفي» ← «ربط حساب Firebase».',
+                        style: TextStyle(fontSize: 12.5, height: 1.5),
+                      ),
+                    ),
+
+                  if (_room == null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(colors: [kEmerald, kEmeraldDeep]),
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: kGold),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('أنشئ غرفة تحدي (٥ أشخاص)', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 19, color: Colors.white)),
+                          const SizedBox(height: 6),
+                          const Text('مقاعد حقيقية متزامنة عبر Firebase — الفائز ينال تاج «متقن اليوم».', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<int>(
+                            value: _pickedSurahIdx,
+                            dropdownColor: kEmeraldDeep,
+                            style: const TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.black26,
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                            ),
+                            items: List.generate(widget.surahs.length, (i) => DropdownMenuItem(value: i, child: Text('${widget.surahs[i].num}. ${widget.surahs[i].name}'))),
+                            onChanged: (v) {
+                              if (v != null) setState(() => _pickedSurahIdx = v);
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(backgroundColor: kGold, foregroundColor: kEmeraldDeep, padding: const EdgeInsets.symmetric(vertical: 13)),
+                              onPressed: _busy ? null : _createLiveRoom,
+                              child: Text(_busy ? 'جارٍ الإنشاء...' : 'إنشاء غرفة التحدي الآن', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('أو انضم لغرفة برمز الدعوة', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15)),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _joinCtrl,
+                            textDirection: TextDirection.ltr,
+                            decoration: InputDecoration(hintText: 'ITQAN-1234', border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: kEmerald, foregroundColor: kGoldLight, padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16)),
+                          onPressed: _busy ? null : _joinRoom,
+                          child: const Text('انضمام', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(colors: [kEmerald, kEmeraldDeep]),
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: kGold),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('رمز الغرفة: ${_room!['code']}', style: const TextStyle(color: kGold, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                              TextButton(
+                                onPressed: () {
+                                  widget.state.activeRoomCode = '';
+                                  widget.state.save();
+                                  setState(() => _room = null);
+                                },
+                                child: const Text('مغادرة', style: TextStyle(color: Colors.white60, fontSize: 12)),
+                              ),
+                            ],
+                          ),
+                          Text('تحدي ${_room!['surahName']}', style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 20)),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(backgroundColor: kGold, foregroundColor: kEmeraldDeep),
+                                  icon: const Icon(Icons.share_rounded, size: 18),
+                                  label: const Text('دعوة عبر واتساب', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 12)),
+                                  onPressed: () => Share.share('انضم لتحدي ${_room!['surahName']} في تطبيق إتقان! رمز الغرفة: ${_room!['code']}'),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  style: OutlinedButton.styleFrom(foregroundColor: kGoldLight, side: const BorderSide(color: kGold)),
+                                  icon: const Icon(Icons.mic_rounded, size: 18),
+                                  label: const Text('سمّع الآن', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 12)),
+                                  onPressed: () {
+                                    final sn = (_room!['surahNum'] as int) - 1;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ItqanCoachScreen(
+                                          surah: widget.surahs[sn.clamp(0, 113)],
+                                          state: widget.state,
+                                          tts: widget.tts,
+                                          challengeRoomCode: _room!['code'],
+                                        ),
+                                      ),
+                                    ).then((_) => _refreshRoom(_room!['code']));
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text('المشاركون المباشرون (${members.length} / ٥)', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15)),
+                    const SizedBox(height: 8),
+                    for (int i = 0; i < 5; i++)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: i < members.length ? Colors.white : kPaper,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: i == 0 && i < members.length && (members[0]['done'] == true) ? kGold : kBorder),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              i < members.length
+                                  ? '${i == 0 && members[0]['done'] == true ? "👑 متقن اليوم • " : ""}${members[i]['name']}'
+                                  : 'مقعد ${i + 1} فارغ — بانتظار انضمام رفيق',
+                              style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 13, color: i < members.length ? kEmerald : kMuted),
+                            ),
+                            Text(
+                              i < members.length && members[i]['done'] == true ? '${members[i]['score']}%' : '—',
+                              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: kGold),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ],
+              );
+            }
+          }
+
+          // ============================================================================
+          // ITQAN VOICE RECITATION & LIVE TAJWEED COACH STUDIO (ZERO DEMO BUTTONS)
+          // ============================================================================
+          class ItqanCoachScreen extends StatefulWidget {
+            final SurahModel surah;
+            final ItqanState state;
+            final FlutterTts tts;
+            final String? challengeRoomCode;
+            const ItqanCoachScreen({super.key, required this.surah, required this.state, required this.tts, this.challengeRoomCode});
+            @override
+            State<ItqanCoachScreen> createState() => _ItqanCoachScreenState();
+          }
+
+          class _ItqanCoachScreenState extends State<ItqanCoachScreen> with SingleTickerProviderStateMixin {
+            final stt.SpeechToText _speech = stt.SpeechToText();
+            final ScrollController _scroll = ScrollController();
+            late AnimationController _orbCtrl;
+            bool _sttReady = false;
+            String _localeId = 'ar_SA';
+            bool _listening = false;
+            bool _paused = false;
+            bool _peek = false;
+            int _ayahIdx = 0;
+            int _wordIdx = 0;
+            bool _hintFirst = false;
+            int _seconds = 0;
+            double _level = 0.0;
+            String _liveHeard = '';
+            int _processedCount = 0;
+            Timer? _clock;
+            final Set<int> _doneAyahs = {};
+            final List<ReciteMistake> _mistakes = [];
+
+            @override
+            void initState() {
+              super.initState();
+              _orbCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 4));
+              _initStt();
+              _clock = Timer.periodic(const Duration(seconds: 1), (_) {
+                if (_listening && !_paused && mounted) setState(() => _seconds++);
+              });
+            }
+
+            Future<void> _initStt() async {
+              try {
+                final ok = await _speech.initialize(
+                  onStatus: (s) {
+                    if (!mounted) return;
+                    if ((s == 'done' || s == 'notListening') && _listening && !_paused) {
+                      Future.delayed(const Duration(milliseconds: 220), () {
+                        if (_listening && !_paused && mounted) _listenLoop();
+                      });
+                    }
+                  },
+                  onError: (_) {
+                    if (!mounted) return;
+                    if (_listening && !_paused) {
+                      Future.delayed(const Duration(milliseconds: 400), () {
+                        if (_listening && !_paused && mounted) _listenLoop();
+                      });
+                    }
+                  },
+                );
+                if (ok) {
+                  final locs = await _speech.locales();
+                  final ar = locs.where((l) => l.localeId.toLowerCase().startsWith('ar')).toList();
+                  if (ar.isNotEmpty) {
+                    final sa = ar.where((l) => l.localeId.toLowerCase().contains('sa')).toList();
+                    _localeId = sa.isNotEmpty ? sa.first.localeId : ar.first.localeId;
+                  }
+                }
+                if (mounted) setState(() => _sttReady = ok);
+              } catch (_) {}
+            }
+
+            Future<void> _listenLoop() async {
+              if (!_sttReady) {
+                await _initStt();
+                if (!_sttReady) return;
+              }
+              _processedCount = 0;
+              try {
+                await _speech.listen(
+                  localeId: _localeId,
+                  listenFor: const Duration(seconds: 60),
+                  pauseFor: const Duration(seconds: 8),
+                  listenOptions: stt.SpeechListenOptions(partialResults: true, listenMode: stt.ListenMode.dictation, cancelOnError: false),
+                  onSoundLevelChange: (lvl) {
+                    if (mounted) setState(() => _level = lvl.clamp(0.0, 12.0));
+                  },
+                  onResult: (r) {
+                    if (!mounted || !_listening || _paused) return;
+                    final txt = r.recognizedWords.trim();
+                    if (txt.isEmpty) return;
+                    final words = txt.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+                    setState(() => _liveHeard = words.length > 4 ? words.sublist(words.length - 4).join(' ') : txt);
+                    final start = min(_processedCount, words.length);
+                    for (int i = start; i < words.length; i++) {
+                      _matchWord(words[i]);
+                    }
+                    _processedCount = words.length;
+                  },
+                );
+              } catch (_) {}
+            }
+
+            void _matchWord(String spoken) {
+              if (_ayahIdx >= widget.surah.ayahs.length) return;
+              final ayah = widget.surah.ayahs[_ayahIdx];
+              final targets = ayah.text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+              if (_wordIdx >= targets.length) return;
+
+              if (widget.surah.num == 1 && _ayahIdx == 0 && _wordIdx == 0 && widget.surah.ayahs.length > 1) {
+                final w2 = widget.surah.ayahs[1].text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+                if (w2.isNotEmpty && QuranMatcher.wordsMatch(w2[0], spoken)) {
+                  setState(() {
+                    _doneAyahs.add(0);
+                    _ayahIdx = 1;
+                    _wordIdx = 1;
+                    _hintFirst = false;
+                  });
+                  return;
+                }
+              }
+
+              if (QuranMatcher.wordsMatch(targets[_wordIdx], spoken)) {
+                _advance(targets.length);
+                return;
+              }
+              if (_wordIdx + 1 < targets.length && QuranMatcher.wordsMatch(targets[_wordIdx + 1], spoken)) {
+                if (QuranMatcher.normalize(targets[_wordIdx]).length >= 3) {
+                  if (widget.state.vibrateOnError) HapticFeedback.lightImpact();
+                  _mistakes.add(ReciteMistake(ayahNum: ayah.num, expectedWord: targets[_wordIdx], heardWord: spoken));
+                }
+                _advance(targets.length);
+                if (_ayahIdx < widget.surah.ayahs.length && _wordIdx < targets.length) _advance(targets.length);
+              }
+            }
+
+            void _advance(int totalW) {
+              setState(() {
+                _wordIdx++;
+                _hintFirst = false;
+                if (_wordIdx >= totalW) {
+                  _doneAyahs.add(_ayahIdx);
+                  if (_ayahIdx + 1 < widget.surah.ayahs.length) {
+                    _ayahIdx++;
+                    _wordIdx = 0;
+                  } else {
+                    _finish();
+                  }
+                }
+              });
+              Future.delayed(const Duration(milliseconds: 120), () {
+                if (_scroll.hasClients) _scroll.animateTo(_scroll.position.maxScrollExtent, duration: const Duration(milliseconds: 280), curve: Curves.easeOut);
+              });
+            }
+
+            Future<void> _toggleMic() async {
+              if (_listening) {
+                await _finish();
+              } else {
+                setState(() {
+                  _listening = true;
+                  _paused = false;
+                });
+                _orbCtrl.repeat();
+                await _listenLoop();
+              }
+            }
+
+            Future<void> _finish() async {
+              _listening = false;
+              _paused = false;
+              _orbCtrl.stop();
+              await _speech.stop();
+              if (!mounted) return;
+
+              final recited = widget.surah.ayahs.sublist(0, min(widget.surah.ayahs.length, _ayahIdx + 1));
+              final allTajweed = <TajweedNote>[];
+              for (final a in recited) {
+                allTajweed.addAll(TajweedAnalyzer.analyzeAyah(a.text));
+              }
+              final score = max(35, 100 - (_mistakes.length * 10)).clamp(0, 100);
+              if (score >= 85 && _doneAyahs.length == widget.surah.ayahs.length) {
+                widget.state.masteredSurahs.add(widget.surah.num);
+              }
+              widget.state.reports.insert(
+                0,
+                ReportArchiveItem(
+                  surahName: widget.surah.name,
+                  score: score,
+                  errors: _mistakes.length,
+                  tajweedCount: allTajweed.length,
+                  dateStr: DateTime.now().toIso8601String().substring(0, 10),
+                ),
+              );
+              await widget.state.save();
+
+              if (widget.challengeRoomCode != null && widget.state.firebaseUrl.isNotEmpty) {
+                await FirebaseRoomService.joinOrUpdateMember(
+                  dbUrl: widget.state.firebaseUrl,
+                  roomCode: widget.challengeRoomCode!,
+                  memberId: widget.state.memberId,
+                  name: widget.state.studentName.isEmpty ? 'متسابق' : widget.state.studentName,
+                  done: true,
+                  score: score,
+                  tajweed: allTajweed.length,
+                );
+              }
+
+              if (!mounted) return;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ItqanVisualReportScreen(
+                    surah: widget.surah,
+                    ayahCount: recited.length,
+                    durationSec: _seconds,
+                    score: score,
+                    mistakes: _mistakes,
+                    tajweedNotes: allTajweed,
+                    state: widget.state,
+                  ),
+                ),
+              );
+            }
+
+            @override
+            void dispose() {
+              _clock?.cancel();
+              _orbCtrl.dispose();
+              _scroll.dispose();
+              _speech.stop();
+              super.dispose();
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              final currentAyah = widget.surah.ayahs[_ayahIdx];
+              final liveTaj = widget.state.liveTajweedCoach ? TajweedAnalyzer.analyzeAyah(currentAyah.text) : <TajweedNote>[];
+
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text(widget.surah.name, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                  actions: [
+                    IconButton(icon: const Icon(Icons.check_rounded, color: kGoldLight), onPressed: _finish),
+                  ],
+                ),
+                body: Column(
+                  children: [
+                    // Live Tajweed Coaching Banner
+                    if (liveTaj.isNotEmpty)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        color: kEmeraldSoft,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.auto_awesome_rounded, size: 16, color: kGold),
+                              const SizedBox(width: 6),
+                              const Text('أحكام التجويد في هذه الآية: ', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 11, color: kEmerald)),
+                              for (final n in liveTaj.take(4))
+                                Container(
+                                  margin: const EdgeInsets.only(left: 6),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(color: n.color.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(10)),
+                                  child: Text('${n.rule}: ${n.word}', style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: n.color, fontWeight: FontWeight.bold)),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    Expanded(
+                      child: ListView.builder(
+                        controller: _scroll,
+                        padding: const EdgeInsets.all(18),
+                        itemCount: min(widget.surah.ayahs.length, _ayahIdx + 2),
+                        itemBuilder: (_, idx) {
+                          final a = widget.surah.ayahs[idx];
+                          final words = a.text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+                          final done = _doneAyahs.contains(idx);
+                          final current = idx == _ayahIdx;
+
+                          if (done || (_peek && current)) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 14),
+                              child: Text(
+                                '${a.text} ﴿${QuranMatcher.toArabicDigits(a.num)}﴾',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontFamily: 'AmiriQuran', fontSize: widget.state.fontSize, height: 2.0),
+                              ),
+                            );
+                          }
+                          if (current) {
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 14),
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF10211B) : Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(color: kGold),
+                              ),
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 8,
+                                runSpacing: 10,
+                                children: [
+                                  for (int w = 0; w < words.length; w++)
+                                    if (w < _wordIdx)
+                                      Text(words[w], style: TextStyle(fontFamily: 'AmiriQuran', fontSize: widget.state.fontSize, height: 1.7))
+                                    else if (w == _wordIdx && _hintFirst)
+                                      Text(QuranMatcher.firstLetterHint(words[w]), style: TextStyle(fontFamily: 'AmiriQuran', fontSize: widget.state.fontSize, color: kGold))
+                                    else
+                                      Container(
+                                        width: max(36.0, min(86.0, words[w].length * 7.5)),
+                                        height: 11,
+                                        margin: const EdgeInsets.only(top: 18),
+                                        decoration: BoxDecoration(color: kBorder, borderRadius: BorderRadius.circular(6)),
+                                      ),
+                                  Text('﴿${QuranMatcher.toArabicDigits(a.num)}﴾', style: const TextStyle(fontFamily: 'AmiriQuran', fontSize: 22, color: kGold)),
+                                ],
+                              ),
+                            );
+                          }
+                          return Center(child: Text('﴿${QuranMatcher.toArabicDigits(a.num)}﴾', style: const TextStyle(fontFamily: 'AmiriQuran', fontSize: 22, color: kMuted)));
+                        },
+                      ),
+                    ),
+
+                    // Bottom Dock
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark ? kEmeraldDeep : Colors.white,
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 18)],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _liveHeard.isNotEmpty ? 'سمعت: «$_liveHeard»' : 'المس الدائرة الذهبية وابدأ التسميع بصوتك',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 11, color: kMuted),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              TextButton(
+                                onPressed: () => setState(() => _peek = !_peek),
+                                child: Text(_peek ? 'أخفِ الآية' : 'أظهر الآية', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: kEmerald)),
+                              ),
+                              GestureDetector(
+                                onTap: _toggleMic,
+                                child: RotationTransition(
+                                  turns: _orbCtrl,
+                                  child: Container(
+                                    width: 76,
+                                    height: 76,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: const SweepGradient(colors: [kEmerald, Color(0xFF177B5D), kGold, kEmerald]),
+                                      boxShadow: [BoxShadow(color: kEmerald.withValues(alpha: 0.35), blurRadius: 16)],
+                                    ),
+                                    child: Icon(_listening ? Icons.stop_rounded : Icons.mic_rounded, color: Colors.white, size: 32),
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => setState(() => _hintFirst = true),
+                                child: const Text('أول حرف', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: kGold)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          }
+
+          // ============================================================================
+          // SHAREABLE VISUAL PNG REPORT CARD + TAJWEED NOTES REPORT
+          // ============================================================================
+          class ItqanVisualReportScreen extends StatefulWidget {
+            final SurahModel surah;
+            final int ayahCount;
+            final int durationSec;
+            final int score;
+            final List<ReciteMistake> mistakes;
+            final List<TajweedNote> tajweedNotes;
+            final ItqanState state;
+
+            const ItqanVisualReportScreen({
+              super.key,
+              required this.surah,
+              required this.ayahCount,
+              required this.durationSec,
+              required this.score,
+              required this.mistakes,
+              required this.tajweedNotes,
+              required this.state,
+            });
+
+            @override
+            State<ItqanVisualReportScreen> createState() => _ItqanVisualReportScreenState();
+          }
+
+          class _ItqanVisualReportScreenState extends State<ItqanVisualReportScreen> {
+            final GlobalKey _cardKey = GlobalKey();
+            late TextEditingController _nameCtrl;
+
+            @override
+            void initState() {
+              super.initState();
+              _nameCtrl = TextEditingController(text: widget.state.studentName);
+            }
+
+            Future<void> _shareAsImage() async {
+              try {
+                final boundary = _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+                if (boundary == null) return;
+                final image = await boundary.toImage(pixelRatio: 3.0);
+                final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+                if (byteData == null) return;
+                final dir = await getTemporaryDirectory();
+                final file = File('${dir.path}/itqan_report_${DateTime.now().millisecondsSinceEpoch}.png');
+                await file.writeAsBytes(byteData.buffer.asUint8List());
+                await Share.shareXFiles(
+                  [XFile(file.path)],
+                  text: 'تقرير تسميع ${widget.surah.name} — تطبيق إتقان (ITQAN)',
+                );
+              } catch (_) {
+                _shareAsText();
+              }
+            }
+
+            void _shareAsText() {
+              final name = _nameCtrl.text.trim();
+              final b = StringBuffer();
+              b.writeln('شهادة وتقرير تسميع — تطبيق إتقان (ITQAN)');
+              if (name.isNotEmpty) b.writeln('الطالب: $name');
+              b.writeln('السورة: ${widget.surah.name} (${widget.ayahCount} آية)');
+              b.writeln('نسبة الإتقان: ${widget.score}%');
+              b.writeln('عدد الأخطاء: ${widget.mistakes.length} • مواضع التجويد: ${widget.tajweedNotes.length}');
+              Share.share(b.toString());
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: const Text('تقرير التسميع والتجويد', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold))),
+                body: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    // Visual Certificate Card Captured as PNG for WhatsApp Sharing!
+                    RepaintBoundary(
+                      key: _cardKey,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(colors: [kEmerald, kEmeraldDeep], begin: Alignment.topRight, end: Alignment.bottomLeft),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: kGold, width: 2),
+                        ),
+                        child: Column(
+                          children: [
+                            const Text('إتقان — ITQAN', style: TextStyle(fontFamily: 'Cairo', color: kGold, fontWeight: FontWeight.bold, fontSize: 13)),
+                            const Text('تقرير التسميع والتجويد', style: TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                            if (_nameCtrl.text.trim().isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text('الطالب: ${_nameCtrl.text.trim()}', style: const TextStyle(color: kGoldLight, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                              ),
+                            const SizedBox(height: 14),
+                            CircleAvatar(
+                              radius: 38,
+                              backgroundColor: kGold,
+                              child: Text('${widget.score}%', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 22, color: kEmeraldDeep)),
+                            ),
+                            const SizedBox(height: 12),
+                            Text('${widget.surah.name} • ${widget.ayahCount} آية', style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                            Text(
+                              'المدة: ${widget.durationSec ~/ 60}:${(widget.durationSec % 60).toString().padLeft(2, '0')}  •  الأخطاء: ${widget.mistakes.length}  •  مواضع التجويد: ${widget.tajweedNotes.length}',
+                              style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(DateTime.now().toIso8601String().substring(0, 10), style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: _nameCtrl,
+                      onChanged: (_) => setState(() {}),
+                      decoration: InputDecoration(
+                        labelText: 'اسم الطالب على الشهادة (اختياري)',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(backgroundColor: kGold, foregroundColor: kEmeraldDeep, padding: const EdgeInsets.symmetric(vertical: 13)),
+                            icon: const Icon(Icons.image_rounded),
+                            label: const Text('مشاركة كصورة فاخرة', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 13)),
+                            onPressed: _shareAsImage,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 14)),
+                          icon: const Icon(Icons.text_snippet_outlined),
+                          label: const Text('نص', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                          onPressed: _shareAsText,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+
+                    if (widget.mistakes.isNotEmpty) ...[
+                      Text('أخطاء الحفظ (${widget.mistakes.length})', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15, color: kDanger)),
+                      const SizedBox(height: 8),
+                      for (final m in widget.mistakes)
+                        Card(
+                          color: kDangerBg,
+                          child: ListTile(
+                            title: Text('آية ${m.ayahNum} — الصواب: «${m.expectedWord}»', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: kDanger)),
+                            subtitle: Text('سمعت: ${m.heardWord}'),
+                          ),
+                        ),
+                      const SizedBox(height: 14),
+                    ],
+
+                    Text('ملاحظات أحكام التجويد في تلاوتك (${widget.tajweedNotes.length})',
+                        style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15, color: kEmerald)),
+                    const SizedBox(height: 8),
+                    for (final t in widget.tajweedNotes.take(25))
+                      Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          leading: CircleAvatar(radius: 7, backgroundColor: t.color),
+                          title: Text('${t.word}  —  ${t.rule}', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 14, color: t.color)),
+                          subtitle: Text(t.tip, style: const TextStyle(fontSize: 12)),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }
+          }
+
+          // ============================================================================
+          // VOICE STUDIO + MUTASHABIHAT STUDIO + FAJR MODE
+          // ============================================================================
+          class VoiceStudioScreen extends StatefulWidget {
+            final ItqanState state;
+            const VoiceStudioScreen({super.key, required this.state});
+            @override
+            State<VoiceStudioScreen> createState() => _VoiceStudioScreenState();
+          }
+
+          class _VoiceStudioScreenState extends State<VoiceStudioScreen> {
+            final AudioRecorder _rec = AudioRecorder();
+            final AudioPlayer _player = AudioPlayer();
+            bool _recording = false;
+            String? _playing;
+
+            Future<void> _toggle() async {
+              if (_recording) {
+                final path = await _rec.stop();
+                setState(() => _recording = false);
+                if (path != null) {
+                  final now = DateTime.now();
+                  widget.state.recordings.insert(
+                    0,
+                    VoiceNoteItem(
+                      title: 'تلاوة ${now.hour}:${now.minute.toString().padLeft(2, '0')}',
+                      path: path,
+                      dateStr: now.toIso8601String().substring(0, 10),
+                    ),
+                  );
+                  widget.state.save();
+                }
+              } else if (await _rec.hasPermission()) {
+                final dir = await getApplicationDocumentsDirectory();
+                final path = '${dir.path}/itqan_${DateTime.now().millisecondsSinceEpoch}.m4a';
+                await _rec.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: path);
+                setState(() => _recording = true);
+              }
+            }
+
+            @override
+            void dispose() {
+              _rec.dispose();
+              _player.dispose();
+              super.dispose();
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              return AnimatedBuilder(
+                animation: widget.state,
+                builder: (_, __) => Scaffold(
+                  appBar: AppBar(title: const Text('تسجيلاتي الصوتية', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold))),
+                  body: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(backgroundColor: _recording ? kDanger : kEmerald, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
+                            icon: Icon(_recording ? Icons.stop_rounded : Icons.fiber_manual_record_rounded),
+                            label: Text(_recording ? 'إيقاف وحفظ التسجيل' : 'سجّل تلاوتك الآن', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                            onPressed: _toggle,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: widget.state.recordings.length,
+                          itemBuilder: (_, i) {
+                            final v = widget.state.recordings[i];
+                            return Card(
+                              child: ListTile(
+                                leading: IconButton(
+                                  icon: Icon(_playing == v.path ? Icons.stop_circle_rounded : Icons.play_circle_fill_rounded, color: kEmerald, size: 32),
+                                  onPressed: () async {
+                                    if (_playing == v.path) {
+                                      await _player.stop();
+                                      setState(() => _playing = null);
+                                    } else {
+                                      await _player.play(DeviceFileSource(v.path));
+                                      setState(() => _playing = v.path);
+                                    }
+                                  },
+                                ),
+                                title: Text(v.title, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                                subtitle: Text(v.dateStr),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.share_rounded, color: kGold),
+                                  onPressed: () => Share.shareXFiles([XFile(v.path)], text: 'تسجيل تسميع من تطبيق إتقان — ITQAN'),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          class MutashabihatStudioScreen extends StatelessWidget {
+            const MutashabihatStudioScreen({super.key});
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: const Text('متشابهاتي — مقارنة الآيات', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold))),
+                body: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: kMutashabihatPairs.length,
+                  itemBuilder: (_, i) {
+                    final p = kMutashabihatPairs[i];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: const BorderSide(color: kBorder)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(p['aRef']!, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: kGold, fontSize: 12)),
+                            Text(p['aText']!, style: const TextStyle(fontFamily: 'AmiriQuran', fontSize: 22, height: 1.9)),
+                            const Divider(),
+                            Text(p['bRef']!, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: kGold, fontSize: 12)),
+                            Text(p['bText']!, style: const TextStyle(fontFamily: 'AmiriQuran', fontSize: 22, height: 1.9)),
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(color: kEmeraldSoft, borderRadius: BorderRadius.circular(12)),
+                              child: Text('الفرق: ${p['diff']}', style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: kEmerald, fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }
+          }
+
+          class FajrVoiceScreen extends StatefulWidget {
+            final SurahModel surah;
+            final FlutterTts tts;
+            const FajrVoiceScreen({super.key, required this.surah, required this.tts});
+            @override
+            State<FajrVoiceScreen> createState() => _FajrVoiceScreenState();
+          }
+
+          class _FajrVoiceScreenState extends State<FajrVoiceScreen> {
+            int _idx = 0;
+            @override
+            void initState() {
+              super.initState();
+              widget.tts.speak('وضع الفجر مفعل. أغمض عينيك وابدأ تسميع ${widget.surah.name}');
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                backgroundColor: Colors.black,
+                body: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('وضع الفجر • صوت فقط', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                            TextButton(onPressed: () => Navigator.pop(context), child: const Text('خروج', style: TextStyle(color: Colors.white54))),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text('${widget.surah.name} • آية ${_idx + 1}', style: const TextStyle(color: Colors.white38)),
+                            const SizedBox(height: 24),
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: kGold, width: 2)),
+                              child: const Icon(Icons.mic_rounded, size: 46, color: kGold),
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(foregroundColor: kGold, side: const BorderSide(color: Colors.white24)),
+                                  onPressed: () {
+                                    setState(() => _idx = (_idx + 1) % widget.surah.ayahs.length);
+                                    widget.tts.speak('أحسنت، كمّل');
+                                  },
+                                  child: const Text('أحسنت (كمّل)'),
+                                ),
+                                const SizedBox(width: 12),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(foregroundColor: Colors.white60, side: const BorderSide(color: Colors.white24)),
+                                  onPressed: () => widget.tts.speak('وقف، عيد الآية. ${widget.surah.ayahs[_idx].text}'),
+                                  child: const Text('عيد الآية'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Text('شاشة سوداء بالكامل لراحة العين وقت الفجر', style: TextStyle(color: Colors.white24, fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+          }
+
+          DART_EOF
+
+      - name: Configure Android Manifest, Desugaring, minSdk 24 & compileSdk 36
+        run: |
+          python3 - << 'PY_EOF'
+          from pathlib import Path
+          import re
+          mp = Path("android/app/src/main/AndroidManifest.xml")
+          txt = mp.read_text(encoding="utf-8")
+          txt = re.sub(r'android:label="[^"]*"', 'android:label="إتقان"', txt, count=1)
+          perms = '    <uses-permission android:name="android.permission.RECORD_AUDIO"/>\n    <uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>\n    <uses-permission android:name="android.permission.WAKE_LOCK"/>\n'
+          if "RECORD_AUDIO" not in txt:
+              txt = txt.replace("<application", perms + "    <application", 1)
+          if "<queries>" not in txt:
+              queries = '    <queries>\n        <intent>\n            <action android:name="android.speech.RecognitionService"/>\n        </intent>\n    </queries>\n'
+              txt = txt.replace("<application", queries + "    <application", 1)
+          mp.write_text(txt, encoding="utf-8")
+
+          gp_kts = Path("android/app/build.gradle.kts")
+          if gp_kts.exists():
+              g = gp_kts.read_text(encoding="utf-8")
+              g = re.sub(r"compileSdk\s*=\s*flutter\.compileSdkVersion", "compileSdk = 36", g)
+              g = re.sub(r"minSdk\s*=\s*flutter\.minSdkVersion", "minSdk = 24", g)
+              if "isCoreLibraryDesugaringEnabled" not in g:
+                  g = g.replace("compileOptions {", "compileOptions {\n        isCoreLibraryDesugaringEnabled = true", 1)
+              if "desugar_jdk_libs" not in g:
+                  g += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")\n}\n'
+              gp_kts.write_text(g, encoding="utf-8")
+
+          gp_groovy = Path("android/app/build.gradle")
+          if gp_groovy.exists():
+              g = gp_groovy.read_text(encoding="utf-8")
+              g = re.sub(r"compileSdk\s*=?\s*flutter\.compileSdkVersion", "compileSdk = 36", g)
+              g = re.sub(r"compileSdkVersion\s+flutter\.compileSdkVersion", "compileSdkVersion 36", g)
+              g = re.sub(r"minSdk\s*=?\s*flutter\.minSdkVersion", "minSdk = 24", g)
+              g = re.sub(r"minSdkVersion\s+flutter\.minSdkVersion", "minSdkVersion 24", g)
+              if "coreLibraryDesugaringEnabled" not in g:
+                  g = g.replace("compileOptions {", "compileOptions {\n        coreLibraryDesugaringEnabled true", 1)
+              if "desugar_jdk_libs" not in g:
+                  g += "\ndependencies {\n    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'\n}\n"
+              gp_groovy.write_text(g, encoding="utf-8")
+          PY_EOF
+
+      - name: Build Release APK
+        run: |
+          flutter pub get
+          flutter build apk --release
+
+      - name: Upload ITQAN v4 Full Quran APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ITQAN-v4-Full-Quran-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
