@@ -1,1 +1,193 @@
+name: Build ITQAN Full Quran APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Initialize Flutter Android project while preserving lib/main.dart
+        run: |
+          cp lib/main.dart /tmp/itqan_main.dart
+          flutter create --platforms=android --org com.almahdali --project-name itqan_quran .
+          cp /tmp/itqan_main.dart lib/main.dart
+          mkdir -p assets/fonts assets/images assets/data
+
+      - name: Bundle Complete Holy Quran and Arabic Fonts offline
+        run: |
+          npm install --no-save quran-json@3.1.2 @fontsource/amiri-quran @fontsource/cairo @fontsource/tajawal
+          python3 -m pip install --break-system-packages -q pillow fonttools brotli
+          python3 - << 'PREP_EOF'
+          import glob
+          import json
+          import math
+          from pathlib import Path
+          from fontTools.ttLib import TTFont
+          from PIL import Image, ImageDraw
+
+          with open("node_modules/quran-json/dist/quran.json", "r", encoding="utf-8") as f:
+              raw = json.load(f)
+          surahs_out = []
+          for s in raw:
+              ayahs = [{"n": v["id"], "t": v["text"], "p": 1, "j": 1} for v in s["verses"]]
+              surahs_out.append({
+                  "num": s["id"],
+                  "name": "سورة " + s["name"],
+                  "type": "مكية" if s.get("type") == "meccan" else "مدنية",
+                  "page": 1,
+                  "ayahs": ayahs
+              })
+          assert len(surahs_out) == 114
+          assert sum(len(s["ayahs"]) for s in surahs_out) == 6236
+          with open("assets/data/quran_full.json", "w", encoding="utf-8") as f:
+              json.dump(surahs_out, f, ensure_ascii=False, separators=(",", ":"))
+
+          def convert_font(pkg, weight, out_path):
+              matches = sorted(glob.glob(f"node_modules/@fontsource/{pkg}/files/*arabic*{weight}*.woff2"))
+              if not matches:
+                  matches = sorted(glob.glob(f"node_modules/@fontsource/{pkg}/files/*.woff2"))
+              assert matches, f"Font not found for {pkg}"
+              font = TTFont(matches[0])
+              font.flavor = None
+              font.save(out_path)
+
+          convert_font("amiri-quran", "400", "assets/fonts/AmiriQuran-Regular.ttf")
+          convert_font("cairo", "700", "assets/fonts/Cairo-Bold.ttf")
+          convert_font("tajawal", "400", "assets/fonts/Tajawal-Regular.ttf")
+          convert_font("tajawal", "700", "assets/fonts/Tajawal-Bold.ttf")
+
+          def draw_star(draw, cx, cy, r_outer, r_inner, points, color):
+              pts = []
+              for i in range(points * 2):
+                  ang = math.pi * i / points - math.pi / 2
+                  r = r_outer if i % 2 == 0 else r_inner
+                  pts.append((cx + r * math.cos(ang), cy + r * math.sin(ang)))
+              draw.polygon(pts, outline=color)
+
+          bg = Image.new("RGB", (1080, 1920), (11, 61, 46))
+          d = ImageDraw.Draw(bg)
+          for y in range(1920):
+              t = y / 1920.0
+              d.line([(0, y), (1080, y)], fill=(int(11 * (1 - t) + 7 * t), int(61 * (1 - t) + 41 * t), int(46 * (1 - t) + 31 * t)))
+          d.arc((110, 140, 970, 1100), 180, 360, fill=(201, 162, 39), width=4)
+          d.arc((150, 180, 930, 1060), 180, 360, fill=(75, 110, 92), width=2)
+          draw_star(d, 540, 560, 190, 95, 8, (201, 162, 39))
+          d.rounded_rectangle((360, 460, 535, 650), radius=14, outline=(232, 213, 149), width=5)
+          d.rounded_rectangle((545, 460, 720, 650), radius=14, outline=(232, 213, 149), width=5)
+          bg.save("assets/images/itqan_bg.png", "PNG")
+
+          icon = Image.new("RGB", (512, 512), (11, 61, 46))
+          idraw = ImageDraw.Draw(icon)
+          idraw.ellipse((20, 20, 492, 492), fill=(7, 41, 31), outline=(201, 162, 39), width=12)
+          draw_star(idraw, 256, 256, 170, 86, 8, (201, 162, 39))
+          idraw.rounded_rectangle((170, 185, 252, 325), radius=10, outline=(232, 213, 149), width=8)
+          idraw.rounded_rectangle((260, 185, 342, 325), radius=10, outline=(232, 213, 149), width=8)
+
+          for folder, sz in [("mipmap-mdpi", 48), ("mipmap-hdpi", 72), ("mipmap-xhdpi", 96), ("mipmap-xxhdpi", 144), ("mipmap-xxxhdpi", 192)]:
+              out = Path(f"android/app/src/main/res/{folder}")
+              out.mkdir(parents=True, exist_ok=True)
+              icon.resize((sz, sz), Image.Resampling.LANCZOS).save(out / "ic_launcher.png", "PNG")
+          PREP_EOF
+          rm -rf node_modules package.json package-lock.json
+
+      - name: Write pubspec.yaml
+        run: |
+          cat << 'YAML_EOF' > pubspec.yaml
+          name: itqan_quran
+          description: تطبيق إتقان - ITQAN لحفظ القرآن الكريم كاملًا بدون إنترنت
+          publish_to: 'none'
+          version: 2.0.0+2
+          environment:
+            sdk: '>=3.2.0 <4.0.0'
+          dependencies:
+            flutter:
+              sdk: flutter
+            flutter_localizations:
+              sdk: flutter
+            shared_preferences: ^2.2.3
+            flutter_tts: ^4.0.2
+            flutter_local_notifications: ^17.2.2
+            speech_to_text: ^7.0.0
+          flutter:
+            uses-material-design: true
+            assets:
+              - assets/images/itqan_bg.png
+              - assets/data/quran_full.json
+            fonts:
+              - family: AmiriQuran
+                fonts:
+                  - asset: assets/fonts/AmiriQuran-Regular.ttf
+              - family: Cairo
+                fonts:
+                  - asset: assets/fonts/Cairo-Bold.ttf
+                    weight: 700
+              - family: Tajawal
+                fonts:
+                  - asset: assets/fonts/Tajawal-Regular.ttf
+                  - asset: assets/fonts/Tajawal-Bold.ttf
+                    weight: 700
+          YAML_EOF
+
+      - name: Configure Android Manifest, Desugaring, minSdk 24 & compileSdk 36
+        run: |
+          python3 - << 'PY_EOF'
+          from pathlib import Path
+          import re
+          mp = Path("android/app/src/main/AndroidManifest.xml")
+          txt = mp.read_text(encoding="utf-8")
+          txt = re.sub(r'android:label="[^"]*"', 'android:label="إتقان"', txt, count=1)
+          perms = '    <uses-permission android:name="android.permission.RECORD_AUDIO"/>\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>\n    <uses-permission android:name="android.permission.WAKE_LOCK"/>\n'
+          if "RECORD_AUDIO" not in txt:
+              txt = txt.replace("<application", perms + "    <application", 1)
+          mp.write_text(txt, encoding="utf-8")
+
+          gp_kts = Path("android/app/build.gradle.kts")
+          if gp_kts.exists():
+              g = gp_kts.read_text(encoding="utf-8")
+              g = re.sub(r"compileSdk\s*=\s*flutter\.compileSdkVersion", "compileSdk = 36", g)
+              g = re.sub(r"minSdk\s*=\s*flutter\.minSdkVersion", "minSdk = 24", g)
+              if "isCoreLibraryDesugaringEnabled" not in g:
+                  g = g.replace("compileOptions {", "compileOptions {\n        isCoreLibraryDesugaringEnabled = true", 1)
+              if "desugar_jdk_libs" not in g:
+                  g += '\ndependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")\n}\n'
+              gp_kts.write_text(g, encoding="utf-8")
+
+          gp_groovy = Path("android/app/build.gradle")
+          if gp_groovy.exists():
+              g = gp_groovy.read_text(encoding="utf-8")
+              g = re.sub(r"compileSdk\s*=?\s*flutter\.compileSdkVersion", "compileSdk = 36", g)
+              g = re.sub(r"compileSdkVersion\s+flutter\.compileSdkVersion", "compileSdkVersion 36", g)
+              g = re.sub(r"minSdk\s*=?\s*flutter\.minSdkVersion", "minSdk = 24", g)
+              g = re.sub(r"minSdkVersion\s+flutter\.minSdkVersion", "minSdkVersion 24", g)
+              if "coreLibraryDesugaringEnabled" not in g:
+                  g = g.replace("compileOptions {", "compileOptions {\n        coreLibraryDesugaringEnabled true", 1)
+              if "desugar_jdk_libs" not in g:
+                  g += "\ndependencies {\n    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'\n}\n"
+              gp_groovy.write_text(g, encoding="utf-8")
+          PY_EOF
+
+      - name: Build Release APK
+        run: |
+          flutter pub get
+          flutter build apk --release
+
+      - name: Upload ITQAN Full Quran APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ITQAN-Full-Quran-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
 
